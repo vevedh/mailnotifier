@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <!--
+    SPDX-FileCopyrightText: Hervé de CHAVIGNY <vevedh@gmail.com>
+    SPDX-License-Identifier: CC0-1.0
+    -->
+    <id>mailnotifier</id>
+    <name>Mail Notifier</name>
+    <summary>Send Mail Notification</summary>
+    <description><![CDATA[Send Mail Notification]]></description>
+    <version>0.0.1</version>
+    <licence>agpl</licence>
+    <author mail="vevedh@gmail.com" homepage="https://github.com/vevedh">Hervé de CHAVIGNY</author>
+    <namespace>MailNotifier</namespace>
+    <category>workflow</category>
+    <bugs>https://github.com/vevedh/mailnotifier/issues</bugs>
+    <dependencies>
+        <nextcloud min-version="25" max-version="25"/>
+    </dependencies>
+    <navigations>
+        <navigation>
+            <name>Mail Notifier</name>
+            <route>mailnotifier.page.index</route>
+        </navigation>
+    </navigations>
+</info>
