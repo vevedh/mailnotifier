@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace OCA\MailNotifier\AppInfo;
 
 use OCA\FlowNotifications\Flow\Operation;
-use OCA\FlowNotifications\Notification\Notifier;
+use OCA\FlowNotifications\Notification\MailNotifier;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -29,7 +29,7 @@ class Application extends App implements IBootstrap {
 
 	public function boot(IBootContext $context): void {
 		$container = $context->getServerContainer();
-		$container->get(IManager::class)->registerNotifierService(Notifier::class);
+		$container->get(IManager::class)->registerNotifierService(MailNotifier::class);
 
 		$dispatcher = $container->get(IEventDispatcher::class);
 		$dispatcher->addListener(RegisterOperationsEvent::class,

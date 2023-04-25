@@ -38,7 +38,7 @@ use OCP\WorkflowEngine\EntityContext\IIcon;
 use OCP\WorkflowEngine\IEntity;
 use OCP\WorkflowEngine\IEntityEvent;
 
-class Notifier implements INotifier {
+class MailNotifier implements INotifier {
 	/** @var IL10N */
 	private $l;
 	/** @var IServerContainer */
