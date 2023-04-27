@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace OCA\MailNotifier\AppInfo;
 
-use OCA\FlowNotifications\Flow\Operation;
-use OCA\FlowNotifications\Notification\MailNotifier;
+use OCA\MailNotifier\Flow\Operation;
+use OCA\MailNotifier\Notification\MailNotifier;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;

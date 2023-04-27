@@ -4,10 +4,15 @@
  * @license AGPL-3.0-or-later
  */
 
-import FlowNotify from './views/FlowMailNotify'
+import FlowMailNotify from './views/FlowMailNotify'
+import Vue from 'vue';
+
+import VueTrix from "vue-trix";
+
+Vue.use(VueTrix);
 
 window.OCA.WorkflowEngine.registerOperator({
-	id: 'OCA\\FlowMailNotifications\\Flow\\Operation',
+	id: 'OCA\\MailNotifier\\Flow\\Operation',
 	color: '#f1d340',
 	operation: '',
 	options: FlowMailNotify,

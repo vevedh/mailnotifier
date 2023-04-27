@@ -23,10 +23,10 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\FlowNotifications\Notification;
+namespace OCA\MailNotifier\Notification;
 
 use InvalidArgumentException;
-use OCA\FlowNotifications\AppInfo\Application;
+use OCA\MailNotifier\AppInfo\Application;
 use OCP\IL10N;
 use OCP\IServerContainer;
 use OCP\IURLGenerator;

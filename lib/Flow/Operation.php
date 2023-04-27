@@ -23,11 +23,12 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\FlowNotifications\Flow;
+namespace OCA\MailNotifier\Flow;
 
 use DateTime;
-use OCA\FlowNotifications\AppInfo\Application;
+use OCA\MailNotifier\AppInfo\Application;
 use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\GenericEvent;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\IUser;
@@ -40,6 +41,7 @@ use OCP\WorkflowEngine\IManager as FlowManager;
 use OCP\WorkflowEngine\IOperation;
 use OCP\WorkflowEngine\IRuleMatcher;
 use Psr\Log\LoggerInterface;
+use function OCP\Log\logger;
 use UnexpectedValueException;
 use function json_decode;
 use function json_encode;
@@ -50,8 +52,7 @@ class Operation implements IOperation {
 	private $l;
 	/** @var IURLGenerator */
 	private $urlGenerator;
-	/** @var IManager */
-	private $notificationManager;
+
 	/** @var IMailer */
 	private $mailer;
 	/** @var IUserSession */
@@ -63,14 +64,12 @@ class Operation implements IOperation {
 		IL10N $l,
 		IURLGenerator $urlGenerator,
 		IMailer $mailer,
-		IManager $notificationManager,
 		IUserSession $userSession,
 		LoggerInterface $logger
 	) {
 		$this->l = $l;
 		$this->urlGenerator = $urlGenerator;
 		$this->mailer = $mailer;
-		$this->notificationManager = $notificationManager;
 		$this->userSession = $userSession;
 		$this->logger = $logger;
 	}
@@ -79,28 +78,28 @@ class Operation implements IOperation {
 	 * @inheritDoc
 	 */
 	public function getDisplayName(): string {
-		return $this->l->t('Send a mail notification');
+		return $this->l->t('Envoyer un e-mail de notification');
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getDescription(): string {
-		return $this->l->t('Triggers a mail notification');
+		return $this->l->t('Déclenche un e-mail de notification');
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getIcon(): string {
-		return $this->urlGenerator->imagePath('notifications', 'notifications.svg');
+		return $this->urlGenerator->imagePath('mailnotifier', 'mailnotifier.svg');
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function isAvailableForScope(int $scope): bool {
-		return $scope === FlowManager::SCOPE_USER;
+		return true; //$scope === FlowManager::SCOPE_USER;
 	}
 
 	/**
@@ -114,64 +113,79 @@ class Operation implements IOperation {
 	 * @inheritDoc
 	 */
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
+		if (!$event instanceof GenericEvent) {
+			return;
+		}
+		
+		$entity = $ruleMatcher->getEntity();
+
+		$type = $entity->getName();
+
+		if ($eventName === '\OCP\Files::postRename' || $eventName === '\OCP\Files::postCopy') {
+			/** @var Node $oldNode */
+			[, $node] = $event->getSubject();
+		} else {
+			$node = $event->getSubject();
+		}
+
+		[,, $folder,] = explode('/', $node->getPath(), 4);
+		if ($folder !== 'files' || $node instanceof Folder) {
+			return;
+		}
+
 		$flows = $ruleMatcher->getFlows(false);
 		foreach ($flows as $flow) {
 			try {
 				$uid = $flow['scope_actor_id'];
 				$sessionUser = $this->userSession->getUser();
-				if ($sessionUser instanceof IUser && $uid ===$sessionUser->getUID()) {
-					continue;
-				}
-
-				$entity = $ruleMatcher->getEntity();
-				$parameters = ['entityClass' => get_class($entity)];
-				if ($entity instanceof IContextPortation) {
-					if (json_encode($entity->exportContextIDs()) !== false) {
-						$parameters['entityContext'] = $entity->exportContextIDs();
-					} else {
-						$this->logger->debug('Context of {entity} cannot be JSON-encoded',
-							[
-								'entity' => get_class($entity),
-							]
-						);
-					}
-				}
-
 				$flowOptions = json_decode($flow['operation'], true);
 				if (!is_array($flowOptions) || empty($flowOptions)) {
-					throw new UnexpectedValueException('Cannot decode operation details');
+					throw new UnexpectedValueException('Impossible de récupérer le détail de l\opération');
 				}
-				$parameters['inscription'] = trim($flowOptions['inscription'] ?? '');
 
+				//$sessionUser = $this->userSession->getUser();
+				//$sessionUser->getAdressEmail();
+				if (str_contains(trim($flowOptions['to'] ?? ''),';')) {
+					$sendmails = explode(';',trim($flowOptions['to'] ?? ''));
+				} else {
+					$sendmails = array(trim($flowOptions['to'] ?? ''));
+				}
 
-				/*
-				$notification = $this->notificationManager->createNotification();
-				$notification->setApp(Application::APP_ID)
-					->setSubject($eventName, $parameters)
-					->setUser($uid)
-					->setObject($flow['entity'], '0')
-					->setDateTime(new DateTime());
-				*/
+				$subject = trim($flowOptions['subject'] ?? '');
+				$mailcontent = trim($flowOptions['mailcontent'] ?? '');
+				$from = trim($flowOptions['from'] ?? '');
+				if (($from === '') || (!str_contains($from,',')) || (!str_contains($from,'@'))) {
+					throw new UnexpectedValueException('Impossible de récupérer l\'adresse source');
+				}
+				$fromSplit = explode(',',$from);
+				$fromArray = array($fromSplit[0]=>$fromSplit[1]);
 				
-				$message =  $this->mailer->createMessage();
-				$message->setSubject('Test pour fiches navettes');
-				$message->setFrom(array('notification@cacem.fr' => 'Test cacem Notifier'));
-				$message->setTo(array('herve.dechavigny@cacem.fr' => 'Hervé de CHAVIGNY'));
-				$message->setBody($flow['entity'], 'text/html');
-				$this->mailer->send($message);
-
-
-				/*if ($entity instanceof IUrl) {
-					$url = $entity->getUrl();
-					if ($url === '') {
-						//$notification->setLink($url);
-					}
+			
+				if ($uid) {
+					$message =  $this->mailer->createMessage();
+					$message->setSubject($subject);
+					$message->setFrom($fromArray);
+					$message->setTo(array($sessionUser->getEMailAddress()));
+					$message->setBody($mailcontent, 'text/html');
+					$this->mailer->send($message);
+				} else {
+					
+					array_push($sendmails,$sessionUser->getEMailAddress());
+					$message =  $this->mailer->createMessage();
+					$message->setSubject($subject);
+					$message->setFrom($fromArray);
+					$message->setTo($sendmails);
+					$message->setBody($mailcontent, 'text/html');
+					$this->mailer->send($message);
 				}
+				
 
-				$this->notificationManager->notify($notification);*/
 			} catch (UnexpectedValueException $e) {
 				continue;
 			}
 		}
+
+		
+		
 	}
 }
