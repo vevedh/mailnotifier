@@ -9,7 +9,7 @@
     <name>Mail Notifier</name>
     <summary>Send Mail Notification</summary>
     <description><![CDATA[Send Mail Notification]]></description>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <licence>agpl</licence>
     <author mail="vevedh@gmail.com" homepage="https://github.com/vevedh">Hervé de CHAVIGNY</author>
     <namespace>MailNotifier</namespace>

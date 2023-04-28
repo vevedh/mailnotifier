@@ -44,7 +44,7 @@ export default {
 	},
 	props: {
 		value: {
-			default: JSON.stringify({ subject: '', from:'', to: '', mailcontent:'' }),
+			default: JSON.stringify({ subject: '', from:'', to: '', mailcontent:'ex: fichier {filename} créer par {user} ' }),
 			type: String,
 		}
 	},

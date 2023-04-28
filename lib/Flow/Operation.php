@@ -128,7 +128,7 @@ class Operation implements IOperation {
 			$node = $event->getSubject();
 		}
 
-		[,, $folder,] = explode('/', $node->getPath(), 4);
+		[,, $folder,$filename] = explode('/', $node->getPath(), 4);
 		if ($folder !== 'files' || $node instanceof Folder) {
 			return;
 		}
@@ -159,23 +159,25 @@ class Operation implements IOperation {
 				}
 				$fromSplit = explode(',',$from);
 				$fromArray = array($fromSplit[0]=>$fromSplit[1]);
-				
-			
+				$varcontent = preg_replace('/\{\s*filename\s*\}/',$filename,$mailcontent);
+				$currentUser = $sessionUser->getDisplayName();
+
 				if ($uid) {
 					$message =  $this->mailer->createMessage();
 					$message->setSubject($subject);
 					$message->setFrom($fromArray);
 					$message->setTo(array($sessionUser->getEMailAddress()));
-					$message->setBody($mailcontent, 'text/html');
+					$message->setBody(preg_replace('/\{\s*user\s*\}/',$currentUser,$varcontent), 'text/html');
 					$this->mailer->send($message);
 				} else {
 					
 					array_push($sendmails,$sessionUser->getEMailAddress());
+					
 					$message =  $this->mailer->createMessage();
 					$message->setSubject($subject);
 					$message->setFrom($fromArray);
 					$message->setTo($sendmails);
-					$message->setBody($mailcontent, 'text/html');
+					$message->setBody(preg_replace('/\{\s*user\s*\}/',$currentUser,$varcontent), 'text/html');
 					$this->mailer->send($message);
 				}
 				
