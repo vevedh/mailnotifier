@@ -1,5 +1,5 @@
 [package]
 before_cmds = [
 	"npm ci",
-	"make build-js-production"
+	"npm run build"
 ]

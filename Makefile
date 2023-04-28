@@ -86,6 +86,16 @@ else
 	npm run build
 endif
 
+build-js:
+	npm run dev
+
+.PHONY: build-js-production
+build-js-production:
+	npm run build
+
+watch-js:
+	npm run watch
+	
 # Removes the appstore build
 .PHONY: clean
 clean:
