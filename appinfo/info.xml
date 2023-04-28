@@ -15,8 +15,9 @@
     <namespace>MailNotifier</namespace>
     <category>workflow</category>
     <bugs>https://github.com/vevedh/mailnotifier/issues</bugs>
+    <screenshot>https://raw.githubusercontent.com/vevedh/mailnotifier/main/screenshots/screenshot_mail1.png</screenshot>
     <dependencies>
-        <nextcloud min-version="25" max-version="25"/>
+        <nextcloud min-version="25" max-version="26"/>
     </dependencies>
     <navigations>
         <navigation>
