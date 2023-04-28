@@ -7,8 +7,12 @@
   "bugs": {
     "url": "https://github.com/vevedh/mailnotifier/issues"
   },
-  "license": "agpl",
+  "license": "AGPL-3.0-or-later",
   "private": true,
+  "main": "src/main.js",
+  "directories": {
+    "lib": "lib"
+  },
   "scripts": {
     "build": "webpack --node-env production --progress",
     "dev": "webpack --node-env development --progress",

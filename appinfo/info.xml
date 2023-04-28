@@ -19,10 +19,4 @@
     <dependencies>
         <nextcloud min-version="25" max-version="26"/>
     </dependencies>
-    <navigations>
-        <navigation>
-            <name>Mail Notifier</name>
-            <route>mailnotifier.page.index</route>
-        </navigation>
-    </navigations>
 </info>

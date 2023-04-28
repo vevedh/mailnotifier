@@ -1,4 +1,8 @@
 <template>
+  <!--
+    SPDX-FileCopyrightText: Hervé de CHAVIGNY <vevedh@gmail.com>
+    SPDX-License-Identifier: AGPL-3.0-or-later
+    -->
 <div>
 <div>
 		<input type="text"
@@ -32,6 +36,12 @@
 </template>
 
 <script>
+
+/**
+ * @copyright Copyright (c) 2020 Hervé de CHAVIGNY <vevedh@gmail.com>
+ * @author Hervé de CHAVIGNY <vevedh@gmail.com>
+ * @license AGPL-3.0-or-later
+ */
 
 import Vue from 'vue';
 import VueTrix from "vue-trix";
