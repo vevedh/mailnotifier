@@ -55,3 +55,8 @@ or:
     phpunit -c phpunit.integration.xml
 
 for integration tests
+
+## Using the app
+Currently only the "Document name" filter is available. 
+
+{filename} and {user} smart variables can be used when configuring the mail.
